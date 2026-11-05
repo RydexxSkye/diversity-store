@@ -72,26 +72,34 @@ export class AuthPage {
       this.http.post<any>(API + '/auth/login', { email: this.f.email, password: this.f.password }).subscribe({
         next: r => { this.busy.set(false); if (r.token) return this.finish(r); this.purpose = 'login'; this.step.set('verify'); }, error: this.fail });
     } else {
-            const { dni, telefono, ...rest } = this.f;
+            const body = this.admin
+    ? {
+        nombres: this.f.nombres,
+        apellidos: this.f.apellidos,
+        email: this.f.email,
+        password: this.f.password,
+        adminCode: this.f.adminCode,
+        role: 'admin'
+      }
+    : {
+        nombres: this.f.nombres,
+        apellidos: this.f.apellidos,
+        email: this.f.email,
+        password: this.f.password,
+        telefono: this.f.telefono,
+        fecha_nacimiento: this.f.fecha_nacimiento,
+        acepta: this.f.acepta,
+        role: 'client'
+      };
 
-      const body = this.admin
-        ? {
-            ...rest,
-            role: 'admin'
-          }
-        : {
-            ...this.f,
-            role: 'client'
-          };
-
-      this.http.post<any>(API + '/auth/register', body).subscribe({
-        next: () => {
-          this.busy.set(false);
-          this.purpose = 'register';
-          this.step.set('verify');
-        },
-        error: this.fail
-      });
+  this.http.post<any>(API + '/auth/register', body).subscribe({
+    next: () => {
+      this.busy.set(false);
+      this.purpose = 'register';
+      this.step.set('verify');
+    },
+    error: this.fail
+  });
     }
   }
   verify() {

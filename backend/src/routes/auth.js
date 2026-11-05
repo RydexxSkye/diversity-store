@@ -48,30 +48,27 @@ r.post('/register',validate(reg),async(q,s)=>{
  } else {
 
    // Validaciones para clientes
-   if(!b.dni)
-     throw httpErr(400,'El DNI es obligatorio');
-
    if(!nombres || !apellidos || !b.acepta)
      throw httpErr(400,'Completa tus datos y acepta los términos');
  }
 
- try{
-   const {rows:[u]}=await db.query(
-     `insert into users
-     (dni,nombres,apellidos,email,password_hash,telefono,fecha_nacimiento,role)
-     values($1,$2,$3,$4,$5,$6,$7,$8)
-     returning *`,
-     [
-       b.role==='admin' ? null : b.dni,
-       nombres,
-       apellidos,
-       b.email,
-       await bcrypt.hash(b.password,10),
-       b.role==='admin' ? null : (b.telefono||null),
-       b.role==='admin' ? null : (b.fecha_nacimiento||null),
-       b.role
-     ]
-   );
+  try{
+    const {rows:[u]}=await db.query(
+      `insert into users
+      (dni,nombres,apellidos,email,password_hash,telefono,fecha_nacimiento,role)
+      values($1,$2,$3,$4,$5,$6,$7,$8)
+      returning *`,
+      [
+        null,
+        nombres,
+        apellidos,
+        b.email,
+        await bcrypt.hash(b.password,10),
+        b.role==='admin' ? null : (b.telefono||null),
+        b.role==='admin' ? null : (b.fecha_nacimiento||null),
+        b.role
+      ]
+    );
 
    await codes.send(u,'register');
    s.status(201).json({step:'verify',email:u.email});
