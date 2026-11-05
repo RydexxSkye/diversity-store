@@ -64,3 +64,4 @@ ADMIN: https://diversity-store.skullrydexx.workers.dev/admin
 CLIENTE: https://diversity-store.skullrydexx.workers.dev/
 
 (Para registro de ADMIN, usa el codigo de administrador: DIVERSITY-ADMIN-2026)
+(En ambos modulo tanto cliente como admin, siempre pedira codigo a tu correo que uses)
