@@ -15,16 +15,16 @@ import { API, Auth } from '../core';
   @if (step()==='form') {
     <form (ngSubmit)="submit()">
       @if (mode==='register') {
-        <input name="dni" [(ngModel)]="f.dni" maxlength="8" inputmode="numeric" placeholder="DNI" (blur)="lookup()" required>
         @if (admin) {
-          <input name="ac" [(ngModel)]="f.adminCode" placeholder="Código de administrador" required>
-          <input [value]="(f.nombres+' '+f.apellidos).trim()" readonly placeholder="Nombre (automático por DNI)">
-        } @else {
-          <input name="n" [(ngModel)]="f.nombres" placeholder="Nombres" required>
-          <input name="a" [(ngModel)]="f.apellidos" placeholder="Apellidos" required>
-          <input name="t" [(ngModel)]="f.telefono" maxlength="9" inputmode="numeric" placeholder="Teléfono (9 dígitos)" required>
-          <input name="fn" type="date" [(ngModel)]="f.fecha_nacimiento" required>
-        }
+  <input name="n" [(ngModel)]="f.nombres" placeholder="Nombres" required>
+  <input name="a" [(ngModel)]="f.apellidos" placeholder="Apellidos" required>
+  <input name="ac" [(ngModel)]="f.adminCode" placeholder="Código de administrador" required>
+} @else {
+  <input name="n" [(ngModel)]="f.nombres" placeholder="Nombres" required>
+  <input name="a" [(ngModel)]="f.apellidos" placeholder="Apellidos" required>
+  <input name="t" [(ngModel)]="f.telefono" maxlength="9" inputmode="numeric" placeholder="Teléfono (9 dígitos)" required>
+  <input name="fn" type="date" [(ngModel)]="f.fecha_nacimiento" required>
+}
       }
       <input name="e" type="email" [(ngModel)]="f.email" placeholder="Correo electrónico" required>
       <input name="p" type="password" [(ngModel)]="f.password" maxlength="12" placeholder="Contraseña (8-12 caracteres)" required>
@@ -72,10 +72,26 @@ export class AuthPage {
       this.http.post<any>(API + '/auth/login', { email: this.f.email, password: this.f.password }).subscribe({
         next: r => { this.busy.set(false); if (r.token) return this.finish(r); this.purpose = 'login'; this.step.set('verify'); }, error: this.fail });
     } else {
-      const { nombres, apellidos, telefono, ...rest } = this.f;
-      const body = this.admin ? { ...rest, role: 'admin' } : { ...this.f, role: 'client' };
+            const { dni, telefono, ...rest } = this.f;
+
+      const body = this.admin
+        ? {
+            ...rest,
+            role: 'admin'
+          }
+        : {
+            ...this.f,
+            role: 'client'
+          };
+
       this.http.post<any>(API + '/auth/register', body).subscribe({
-        next: () => { this.busy.set(false); this.purpose = 'register'; this.step.set('verify'); }, error: this.fail });
+        next: () => {
+          this.busy.set(false);
+          this.purpose = 'register';
+          this.step.set('verify');
+        },
+        error: this.fail
+      });
     }
   }
   verify() {
