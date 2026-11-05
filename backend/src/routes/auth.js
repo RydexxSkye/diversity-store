@@ -1,5 +1,5 @@
 const r=require('express').Router(),{z}=require('zod'),bcrypt=require('bcryptjs'),jwt=require('jsonwebtoken');
-const db=require('../db'),cfg=require('../config'),{validate,auth,httpErr}=require('../middleware'),codes=require('../services/codes'),dni=require('../services/dni');
+const db=require('../db'),cfg=require('../config'),{validate,auth,httpErr}=require('../middleware'),codes=require('../services/codes');
 const sign=u=>jwt.sign({id:u.id,role:u.role},cfg.jwt,{expiresIn:'8h'});
 const pub=u=>({
  id:u.id,
@@ -11,27 +11,22 @@ const pub=u=>({
  telefono:u.telefono,
  direccion:u.direccion,
  region:u.region,
- dni:u.dni ? u.dni.slice(0,2)+'****'+u.dni.slice(6) : null
 });
-const D=z.string().regex(/^\d{8}$/,'DNI de 8 dígitos'),E=z.string().email(),P=z.string().min(8).max(12);
-const reg=z.object({
- dni:D.optional(),
- email:E,
- password:P,
- role:z.enum(['client','admin']).default('client'),
- nombres:z.string().min(2).max(80).optional(),
- apellidos:z.string().min(2).max(80).optional(),
- telefono:z.string().regex(/^\d{9}$/,'Teléfono de 9 dígitos').optional(),
- fecha_nacimiento:z.string().optional(),
- adminCode:z.string().optional(),
- acepta:z.boolean().optional()
+const E = z.string().email();
+const P = z.string().min(8).max(12);
+
+const reg = z.object({
+  email: E,
+  password: P,
+  role: z.enum(['client', 'admin']).default('client'),
+  nombres: z.string().min(2).max(80).optional(),
+  apellidos: z.string().min(2).max(80).optional(),
+  telefono: z.string().regex(/^\d{9}$/, 'Teléfono de 9 dígitos').optional(),
+  fecha_nacimiento: z.string().optional(),
+  adminCode: z.string().optional(),
+  acepta: z.boolean().optional()
 });
 const one=e=>db.query('select * from users where email=$1',[e]).then(x=>x.rows[0]);
-
-// Admin: al escribir el DNI se devuelve el nombre (protegido con código de invitación para evitar consultas abiertas)
-r.get('/dni/:dni',async(q,s)=>{
- if(q.headers['x-admin-code']!==cfg.adminInvite)throw httpErr(403,'Código de administrador inválido');
- s.json(await dni.lookup(D.parse(q.params.dni)));});
 
 r.post('/register',validate(reg),async(q,s)=>{
  const b=q.body;
@@ -75,7 +70,7 @@ r.post('/register',validate(reg),async(q,s)=>{
 
  }catch(e){
    if(e.code==='23505')
-     throw httpErr(409,'DNI o correo ya registrado');
+  throw httpErr(409,'El correo electrónico ya está registrado');
 
    throw e;
  }
