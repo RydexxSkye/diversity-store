@@ -1,0 +1,12 @@
+require('express-async-errors');
+const cfg=require('./config'),express=require('express'),helmet=require('helmet'),cors=require('cors'),rate=require('express-rate-limit'),path=require('path');
+const{errorHandler}=require('./middleware'),app=express();
+app.use(helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}),cors({origin:cfg.origin.split(',')}),express.json({limit:'100kb'}));
+app.use('/uploads',express.static(path.resolve(cfg.uploads),{maxAge:'30d',immutable:true}));
+app.use('/api/auth',rate({windowMs:15*60*1000,limit:60}),require('./routes/auth'));
+app.use('/api/products',require('./routes/products'));
+app.use('/api/orders',require('./routes/orders'));
+app.use('/api/dashboard',require('./routes/dashboard'));
+app.get('/api/health',(_q,s)=>s.json({ok:true}));
+app.use(errorHandler);
+app.listen(cfg.port,()=>console.log('API en puerto '+cfg.port));

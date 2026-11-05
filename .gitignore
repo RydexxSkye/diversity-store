@@ -1,0 +1,11 @@
+# Secretos
+.env
+*.env
+!.env.example
+node_modules/
+dist/
+.angular/
+backend/uploads/*
+!backend/uploads/.gitkeep
+Thumbs.db
+npm-debug.log*
