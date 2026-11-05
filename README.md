@@ -58,7 +58,9 @@ Configurar previamente las variables de entorno del backend y la conexión con l
 
 Notas adicionales
 - Se adjunta los links para ingresar tanto para CLIENTE como para ADMIN
+
 ADMIN: https://diversity-store.skullrydexx.workers.dev/admin
+
 CLIENTE: https://diversity-store.skullrydexx.workers.dev/
 
 (Para registro de ADMIN, usa el codigo de administrador: DIVERSITY-ADMIN-2026)
