@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
 import { CanActivateFn, Router } from '@angular/router';
 
-export const HOST = 'http://localhost:3000';           // cambia en producción
+export const HOST = 'https://diversity-store.onrender.com';
 export const API = HOST + '/api';
 export const img = (u?: string) => (u ? HOST + u : 'assets/logo.png');
 
